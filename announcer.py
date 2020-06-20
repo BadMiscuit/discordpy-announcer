@@ -5,7 +5,7 @@ import discord
 import os
 import time
 
-async def announce(voice_clients, member, before, after)
+async def announce(voice_clients, member, before, after):
     if (not member.bot and member.id != CLIENT_ID):
         if (after.channel != None and before.channel != after.channel):
             await leave(voice_clients)
