@@ -4,6 +4,7 @@ import asyncio
 import discord
 import os
 import time
+from config import CLIENT_ID
 
 async def announce(voice_clients, member, before, after):
     if (not member.bot and member.id != CLIENT_ID):
