@@ -6,23 +6,6 @@ import os
 import time
 from config import CLIENT_ID
 
-async def announce(voice_clients, member, before, after):
-    if (not member.bot and member.id != CLIENT_ID):
-        if (after.channel != None and before.channel != after.channel):
-            await leave(voice_clients)
-            filename = tts(member.display_name)
-            try:
-                voice = await after.channel.connect()
-                print("Joined {0}".format(after.channel))
-                await play(voice, filename)
-                await leave(voice_clients, voice)
-            except discord.ClientException:
-                print("Error trying to join {0}: Already in voice".format(after.channel))
-                await leave(voice_clients)
-            except Exception as e:
-                print(str(e))
-                await leave(voice_clients)
-
 async def play(voice, filename):
     time.sleep(0.5)
     print("[{0}]: Start playing {1}".format(
@@ -30,12 +13,18 @@ async def play(voice, filename):
         filename))
     voice.play(discord.FFmpegPCMAudio(filename))
     try:
-        while True:
+        i = 0
+        while (i < 5.0):
             if (not voice.is_playing() or not voice.is_connected()):
                 break
             time.sleep(0.1)
+            i += 0.1
+            if (i // 1 >= 5.0):
+                voice.stop()
+                break
     except Exception as e:
         print("Error playing {0}".format(filename))
+        voice.stop()
     print("[{0}]: Stopped {1}".format(
             datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             filename))
