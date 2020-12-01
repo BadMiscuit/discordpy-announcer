@@ -11,8 +11,8 @@ async def play(voice, filename):
     print("[{0}]: Start playing {1}".format(
         datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
         filename))
-    voice.play(discord.FFmpegPCMAudio(filename))
     try:
+        voice.play(discord.FFmpegPCMAudio(filename))
         i = 0
         while (i < 5.0):
             if (not voice.is_playing() or not voice.is_connected()):
@@ -45,12 +45,14 @@ async def leave(voices, voice=None):
         print("Error trying to leave {0}: {1}".format(voice.channel, str(e)))
 
 def tts(name):
-    filename = "files/voice_{0}.mp3".format(name)
-    if os.path.exists(filename):
+    try:
+        filename = "files/voice_{0}.mp3".format(name)
+        if os.path.exists(filename):
+            return filename
+        msg = "Bonjour {0}".format(name)
+        sound = gTTS(text=msg, lang='fr', slow=False)
+        sound.save(filename)
         return filename
-    msg = "Bonjour {0}".format(name)
-    sound = gTTS(text=msg, lang='fr', slow=False)
-    sound.save(filename)
-    return filename
-
+    except Exception as e:
+        print("Error (tts)")
 
