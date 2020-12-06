@@ -57,9 +57,7 @@ def tts(name):
             return filename
         msg = "Bonjour {0}".format(name)
         msg = urllib.parse.quote(msg)
-        print(msg)
         url = "https://translate.google.com/translate_tts?ie=UTF-8&q={0}&tl=fr-FR&client=tw-ob".format(msg)
-        print(url)
 
         request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(request) as response, open(filename, 'wb') as out_file:
