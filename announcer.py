@@ -1,10 +1,16 @@
-from datetime import datetime
-from gtts import gTTS
 import asyncio
 import discord
 import os
 import time
-from config import CLIENT_ID
+import urllib.request
+import urllib
+import shutil
+
+from discord.ext import commands
+from datetime import datetime
+from gtts import gTTS
+from utils.config import CLIENT_ID
+from utils.util import srs_only
 
 async def play(voice, filename):
     time.sleep(0.5)
@@ -50,9 +56,46 @@ def tts(name):
         if os.path.exists(filename):
             return filename
         msg = "Bonjour {0}".format(name)
-        sound = gTTS(text=msg, lang='fr', slow=False)
-        sound.save(filename)
+        msg = urllib.parse.quote(msg)
+        print(msg)
+        url = "https://translate.google.com/translate_tts?ie=UTF-8&q={0}&tl=fr-FR&client=tw-ob".format(msg)
+        print(url)
+
+        request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(request) as response, open(filename, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
+        #urllib.request.urlretrieve(url, filename)
+        #sound = gTTS(text=msg, lang='fr', slow=False)
+        #sound.save(filename)
         return filename
     except Exception as e:
-        print("Error (tts)")
+        print("Error (tts): {0}".format(e))
 
+
+class AnnounceCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+
+    @commands.Cog.listener()
+    @srs_only()
+    async def on_voice_state_update(self, member, before, after):
+        if (not member.bot and member.id != CLIENT_ID):
+            if (after.channel != None and before.channel != after.channel):
+                await leave(self.bot.voice_clients)
+                filename = tts(member.display_name)
+                try:
+                    voice = await after.channel.connect()
+                    print("Joined {0}".format(after.channel))
+                    await play(voice, filename)
+                    await leave(self.bot.voice_clients, voice)
+                except discord.ClientException:
+                    print("Error trying to join {0}: Already in voice".format(after.channel))
+                    await leave(self.bot.voice_clients)
+                except Exception as e:
+                    print("Foo " + str(e))
+                    await leave(self.bot.voice_clients)
+
+
+def setup(bot):
+    bot.add_cog(AnnounceCog(bot))
