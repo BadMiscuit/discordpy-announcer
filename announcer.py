@@ -27,9 +27,11 @@ async def play(voice, filename):
             i += 0.1
             if (i // 1 >= 5.0):
                 voice.stop()
+                print("Stop playing")
                 break
     except Exception as e:
         print("Error playing {0}".format(filename))
+        print(e)
         voice.stop()
     print("[{0}]: Stopped {1}".format(
             datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
@@ -52,19 +54,20 @@ async def leave(voices, voice=None):
 
 def tts(name):
     try:
-        filename = "files/voice_{0}.mp3".format(name)
+        formated_name = name.replace("/", " slash ").replace(":", " deux points ")
+        filename = "files/voice_{0}.mp3".format(formated_name)
         if os.path.exists(filename):
             return filename
-        msg = "Bonjour {0}".format(name)
-        msg = urllib.parse.quote(msg)
-        url = "https://translate.google.com/translate_tts?ie=UTF-8&q={0}&tl=fr-FR&client=tw-ob".format(msg)
+        msg = "Bonjour {0}".format(formated_name)
 
-        request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(request) as response, open(filename, 'wb') as out_file:
-            shutil.copyfileobj(response, out_file)
+        #msg = urllib.parse.quote(msg)
+        #url = "https://translate.google.com/translate_tts?ie=UTF-8&q={0}&tl=fr-FR&client=tw-ob".format(msg)
+        #request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        #with urllib.request.urlopen(request) as response, open(filename, 'wb') as out_file:
+        #    shutil.copyfileobj(response, out_file)
         #urllib.request.urlretrieve(url, filename)
-        #sound = gTTS(text=msg, lang='fr', slow=False)
-        #sound.save(filename)
+        sound = gTTS(text=msg, lang='fr', slow=False)
+        sound.save(filename)
         return filename
     except Exception as e:
         print("Error (tts): {0}".format(e))
