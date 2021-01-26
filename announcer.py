@@ -10,7 +10,8 @@ from discord.ext import commands
 from datetime import datetime
 from gtts import gTTS
 from utils.config import CLIENT_ID
-from utils.util import srs_only
+from utils.util import guild_only
+
 
 async def play(voice, filename):
     time.sleep(0.5)
@@ -79,7 +80,7 @@ class AnnounceCog(commands.Cog):
 
 
     @commands.Cog.listener()
-    @srs_only()
+    @guild_only()
     async def on_voice_state_update(self, member, before, after):
         if (not member.bot and member.id != CLIENT_ID):
             if (after.channel != None and before.channel != after.channel):
