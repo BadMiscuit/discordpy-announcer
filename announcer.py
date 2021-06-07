@@ -56,10 +56,11 @@ async def leave(voices, voice=None):
 def tts(name):
     try:
         formated_name = name.replace("/", " slash ").replace(":", " deux points ")
-        filename = "files/voice_{0}.mp3".format(formated_name)
+        bonsoir = ((datetime.now().hour + 2) % 24) > 18
+        filename = "files/{0}_{1}.mp3".format(("bonsoir" if bonsoir else "bonjour"), formated_name)
         if os.path.exists(filename):
             return filename
-        msg = "Bonjour {0}".format(formated_name)
+        msg = "{0} {1}".format(("Bonsoir" if bonsoir else "Bonjour"), formated_name)
 
         #msg = urllib.parse.quote(msg)
         #url = "https://translate.google.com/translate_tts?ie=UTF-8&q={0}&tl=fr-FR&client=tw-ob".format(msg)
