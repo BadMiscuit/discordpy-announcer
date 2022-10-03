@@ -55,6 +55,8 @@ async def leave(voices, voice=None):
 
 def tts(name):
     try:
+        if (name.lower() == "na4ax"):
+            name = "nax"
         formated_name = name.replace("/", " slash ").replace(":", " deux points ")
         bonsoir = ((datetime.now().hour + 2) % 24) > 18
         filename = "files/{0}_{1}.mp3".format(("bonsoir" if bonsoir else "bonjour"), formated_name)
@@ -100,5 +102,5 @@ class AnnounceCog(commands.Cog):
                     await leave(self.bot.voice_clients)
 
 
-def setup(bot):
-    bot.add_cog(AnnounceCog(bot))
+async def setup(bot):
+    await bot.add_cog(AnnounceCog(bot))
